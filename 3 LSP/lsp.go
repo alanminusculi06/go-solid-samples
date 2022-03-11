@@ -5,10 +5,6 @@ import "fmt"
 // Liskov Substitution Principle
 
 type Sized interface {
-	GetWidth() int
-	SetWidth(width int)
-	GetHeight() int
-	SetHeight(height int)
 	GetArea() int
 }
 
@@ -16,20 +12,8 @@ type Rectangle struct {
 	width, height int
 }
 
-func (r *Rectangle) GetWidth() int {
-	return r.width
-}
-
-func (r *Rectangle) SetWidth(width int) {
-	r.width = width
-}
-
-func (r *Rectangle) GetHeight() int {
-	return r.height
-}
-
-func (r *Rectangle) SetHeight(height int) {
-	r.height = height
+func NewRectangle(width, height int) Sized {
+	return &Rectangle{width, height}
 }
 
 func (r *Rectangle) GetArea() int {
@@ -44,21 +28,11 @@ type Square struct {
 	Rectangle
 }
 
-func NewSquare(size int) *Square {
+func NewSquare(size int) Sized {
 	sq := Square{}
 	sq.width = size
 	sq.height = size
 	return &sq
-}
-
-func (s *Square) SetWidth(width int) {
-	s.width = width
-	s.height = width
-}
-
-func (s *Square) SetHeight(height int) {
-	s.width = height
-	s.height = height
 }
 
 func (r *Square) GetArea() int {
@@ -71,7 +45,7 @@ func UseIt(sized Sized) {
 }
 
 func main() {
-	rc := &Rectangle{2, 3}
+	rc := NewRectangle(2, 3)
 	UseIt(rc)
 
 	sq := NewSquare(5)
