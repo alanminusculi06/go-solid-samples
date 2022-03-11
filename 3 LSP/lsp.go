@@ -40,8 +40,8 @@ func (r *Square) GetArea() int {
 }
 
 func UseIt(sized Sized) {
-	expectedArea := sized.GetArea()
-	fmt.Println(fmt.Sprintf("%v area: %d", sized, expectedArea))
+	area := sized.GetArea()
+	fmt.Println(fmt.Sprintf("%v area: %d", sized, area))
 }
 
 func main() {
