@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-
 // Single Responsibility Principle
 
 type Journal struct {
@@ -39,22 +38,27 @@ func (j *Journal) Load(filename string) {
 	// ...
 }
 
-var lineSeparator = "\n"
-
-type Persistence struct {
-	lineSeparator string
+type Repository interface {
+	Save(j *Journal, filename string)
+	Load(filename string)
 }
 
-func (p *Persistence) saveToFile(j *Journal, filename string) {
-	_ = ioutil.WriteFile(filename, []byte(strings.Join(j.entries, p.lineSeparator)), 0644)
+type JournalRepository struct{}
+
+func (p *JournalRepository) Save(j *Journal, filename string) {
+	lineSeparator := "\n"
+	_ = ioutil.WriteFile(filename, []byte(strings.Join(j.entries, lineSeparator)), 0644)
+}
+
+func (p *JournalRepository) Load(filename string) {
+	// ...
 }
 
 func main() {
 	j := Journal{}
 	j.AddEntry("Lorem ipsum dolor sit amet")
-	j.AddEntry("Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-	fmt.Println(strings.Join(j.entries, "\n"))
+	j.AddEntry("Consectetur adipiscing elit")
 
-	p := Persistence{lineSeparator}
-	p.saveToFile(&j, "journal.txt")
+	p := JournalRepository{}
+	p.Save(&j, "journal.txt")
 }
