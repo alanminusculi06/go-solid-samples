@@ -1,71 +1,102 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // Dependency Inversion Principle
 // Módulos de alto nível não devem depender de módulos de baixo nível
 // Ambos devem depender de abastrações
 
-type Relationship int
-
-const (
-	Parent Relationship = iota
-	Child
-)
-
-type Person struct {
-	name string
+// domain layer
+type User struct {
+	ID uint
 }
 
-type Info struct {
-	from         *Person
-	relationship Relationship
-	to           *Person
+type UserRepository interface {
+	Insert(user UserDB) (uint, error)
+	GetByID(id uint) (*User, error)
 }
 
-type Relationships struct {
-	relations []Info
+// infrastructure layer
+type UserDB struct {
+	ID uint `json:"id"`
 }
 
-// low-level
-type RelationshipBrowser interface {
-	FindAllChildrenOf(name string) []*Person
+func (u *UserDB) ToUser() *User {
+	return &User{
+		ID: u.ID,
+	}
 }
 
-func (rs *Relationships) FindAllChildrenOf(name string) []*Person {
-	result := make([]*Person, 0)
-	for i, v := range rs.relations {
-		if v.relationship == Parent && v.from.name == name {
-			result = append(result, rs.relations[i].to)
+func (u *User) ToUserDB() *UserDB {
+	return &UserDB{
+		ID: u.ID,
+	}
+}
+
+type UserDatabaseRepository struct {
+	db []UserDB
+}
+
+/*
+type AnotherRepository struct {
+
+}
+type AnotherRepository struct {
+}
+*/
+
+func NewUserDatabaseRepository() UserRepository {
+	return &UserDatabaseRepository{}
+}
+
+func (r *UserDatabaseRepository) Insert(user UserDB) (uint, error) {
+	//add
+	return user.ID, nil
+}
+
+func (r *UserDatabaseRepository) GetByID(id uint) (*User, error) {
+	for _, u := range r.db {
+		if u.ID == id {
+			return u.ToUser(), nil
 		}
 	}
-	return result
+	return nil, errors.New("not found")
 }
 
-func (rs *Relationships) AddParentAndChild(parent, child *Person) {
-	rs.relations = append(rs.relations, Info{parent, Parent, child})
-	rs.relations = append(rs.relations, Info{child, Child, parent})
+// application layer
+type Service interface {
+	SendRegistrationEmail(userID uint) error
 }
 
-type Research struct {
-	browser RelationshipBrowser
+type EmailService struct {
+	repository UserRepository
 }
 
-func (r *Research) Investigate() {
-	for _, p := range r.browser.FindAllChildrenOf("Pedro") {
-		fmt.Println("John has a child called", p.name)
+func NewEmailService(repository UserRepository) Service {
+	return &EmailService{
+		repository: repository,
 	}
+}
+
+func (s *EmailService) SendRegistrationEmail(userID uint) error {
+	user, err := s.repository.GetByID(userID)
+	if err != nil {
+		return err
+	}
+	fmt.Println(user)
+	// send email
+	return nil
 }
 
 func main() {
-	parent := Person{"Pedro"}
-	child1 := Person{"Maria"}
-	child2 := Person{"João"}
+	user := User{}
 
-	relationships := Relationships{}
-	relationships.AddParentAndChild(&parent, &child1)
-	relationships.AddParentAndChild(&parent, &child2)
+	repository := NewUserDatabaseRepository()
+	id, _ := repository.Insert(*user.ToUserDB())
 
-	research := Research{&relationships}
-	research.Investigate()
+	service := NewEmailService(repository)
+	_ = service.SendRegistrationEmail(id)
 }
