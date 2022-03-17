@@ -23,12 +23,13 @@ type Info struct {
 	to           *Person
 }
 
-type RelationshipBrowser interface {
-	FindAllChildrenOf(name string) []*Person
-}
-
 type Relationships struct {
 	relations []Info
+}
+
+// low-level
+type RelationshipBrowser interface {
+	FindAllChildrenOf(name string) []*Person
 }
 
 func (rs *Relationships) FindAllChildrenOf(name string) []*Person {
@@ -47,21 +48,20 @@ func (rs *Relationships) AddParentAndChild(parent, child *Person) {
 }
 
 type Research struct {
-	browser RelationshipBrowser // low-level
+	browser RelationshipBrowser
 }
 
 func (r *Research) Investigate() {
-	for _, p := range r.browser.FindAllChildrenOf("John") {
+	for _, p := range r.browser.FindAllChildrenOf("Pedro") {
 		fmt.Println("John has a child called", p.name)
 	}
 }
 
 func main() {
-	parent := Person{"John"}
-	child1 := Person{"Chris"}
-	child2 := Person{"Matt"}
+	parent := Person{"Pedro"}
+	child1 := Person{"Maria"}
+	child2 := Person{"João"}
 
-	// low-level module
 	relationships := Relationships{}
 	relationships.AddParentAndChild(&parent, &child1)
 	relationships.AddParentAndChild(&parent, &child2)
