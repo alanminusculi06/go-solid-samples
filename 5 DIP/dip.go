@@ -6,6 +6,7 @@ import (
 )
 
 // Dependency Inversion Principle
+// Dependa de abstrações e não de implementações
 // Módulos de alto nível não devem depender de módulos de baixo nível
 // Ambos devem depender de abastrações
 
@@ -40,13 +41,27 @@ type UserDatabaseRepository struct {
 	db []UserDB
 }
 
-/*
 type AnotherRepository struct {
+	db []UserDB
+}
 
+func NewAnotherRepository() UserRepository {
+	return &AnotherRepository{}
 }
-type AnotherRepository struct {
+
+func (r *AnotherRepository) Insert(user UserDB) (uint, error) {
+	//add
+	return user.ID, nil
 }
-*/
+
+func (r *AnotherRepository) GetByID(id uint) (*User, error) {
+	for _, u := range r.db {
+		if u.ID == id {
+			return u.ToUser(), nil
+		}
+	}
+	return nil, errors.New("not found")
+}
 
 func NewUserDatabaseRepository() UserRepository {
 	return &UserDatabaseRepository{}
@@ -94,7 +109,7 @@ func (s *EmailService) SendRegistrationEmail(userID uint) error {
 func main() {
 	user := User{}
 
-	repository := NewUserDatabaseRepository()
+	repository := NewAnotherRepository()
 	id, _ := repository.Insert(*user.ToUserDB())
 
 	service := NewEmailService(repository)

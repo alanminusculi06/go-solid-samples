@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 // Open-Closed Principle
+// Objetos ou entidades devem estar abertos para extensão, mas fechados para modificação
 
 type Color int
 
@@ -58,6 +59,7 @@ func (f *Filter) filterBySizeAndColor(products []Product, size Size, color Color
 
 //filterBySize, filterBySizeAndColor
 
+// better approach
 type Specification interface {
 	IsSatisfied(p *Product) bool
 }
@@ -105,10 +107,20 @@ func main() {
 
 	products := []Product{apple, tree, house}
 
+	bf := BetterFilter{}
+
 	fmt.Print("Green products:\n")
 	greenSpec := ColorSpecification{green}
-	bf := BetterFilter{}
 	for _, v := range bf.Filter(products, greenSpec) {
 		fmt.Printf(" - %s is green\n", v.name)
+	}
+
+	fmt.Print("Green small products:\n")
+	greenSmallSpec := AndSpecification{
+		first:  ColorSpecification{green},
+		second: SizeSpecification{small},
+	}
+	for _, v := range bf.Filter(products, greenSmallSpec) {
+		fmt.Printf(" - %s is green and small\n", v.name)
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 // Interface Segregation Principle
+// Uma classe não deve ser forçada a implementar interfaces e métodos que não irão utilizar
 
 type Document struct{}
 

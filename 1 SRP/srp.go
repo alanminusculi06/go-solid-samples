@@ -7,6 +7,7 @@ import (
 )
 
 // Single Responsibility Principle
+// Uma classe deve ter um, e somente um, motivo para mudar.
 
 type Journal struct {
 	entries []string
@@ -38,11 +39,7 @@ func (j *Journal) Load(filename string) {
 	// ...
 }
 
-type Repository interface {
-	Save(j *Journal, filename string)
-	Load(filename string)
-}
-
+// better approach
 type JournalRepository struct{}
 
 func (p *JournalRepository) Save(j *Journal, filename string) {

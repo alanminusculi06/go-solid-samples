@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 // Liskov Substitution Principle
+// Uma classe derivada deve ser substituível por sua classe base.
 
 type Sized interface {
 	GetArea() int
@@ -12,8 +13,8 @@ type Rectangle struct {
 	width, height int
 }
 
-func NewRectangle(width, height int) Sized {
-	return &Rectangle{width, height}
+func NewRectangle(width, height int) Rectangle {
+	return Rectangle{width, height}
 }
 
 func (r *Rectangle) GetArea() int {
@@ -28,26 +29,26 @@ type Square struct {
 	Rectangle
 }
 
-func NewSquare(size int) Sized {
+func NewSquare(size int) Square {
 	sq := Square{}
 	sq.width = size
 	sq.height = size
-	return &sq
+	return sq
 }
 
 func (r *Square) GetArea() int {
 	return r.height * r.width
 }
 
-func UseIt(sized Sized) {
+func PrintArea(sized Sized) {
 	area := sized.GetArea()
 	fmt.Println(fmt.Sprintf("%v area: %d", sized, area))
 }
 
 func main() {
 	rc := NewRectangle(2, 3)
-	UseIt(rc)
+	PrintArea(&rc)
 
 	sq := NewSquare(5)
-	UseIt(sq)
+	PrintArea(&sq)
 }
