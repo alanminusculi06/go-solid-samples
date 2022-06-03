@@ -83,8 +83,7 @@ type AndSpecification struct {
 }
 
 func (spec AndSpecification) IsSatisfied(p *Product) bool {
-	return spec.first.IsSatisfied(p) &&
-		spec.second.IsSatisfied(p)
+	return spec.first.IsSatisfied(p) && spec.second.IsSatisfied(p)
 }
 
 type BetterFilter struct{}
@@ -106,7 +105,7 @@ func main() {
 
 	products := []Product{apple, tree, house}
 
-	fmt.Print("Green products (new):\n")
+	fmt.Print("Green products:\n")
 	greenSpec := ColorSpecification{green}
 	bf := BetterFilter{}
 	for _, v := range bf.Filter(products, greenSpec) {
