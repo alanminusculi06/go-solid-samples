@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"strings"
 )
@@ -22,8 +21,7 @@ func (j *Journal) String() string {
 }
 
 func (j *Journal) AddEntry(text string) {
-	entry := fmt.Sprintf("%d: %s", j.entryCount()+1, text)
-	j.entries = append(j.entries, entry)
+	j.entries = append(j.entries, text)
 }
 
 func (j *Journal) RemoveEntry(index int) {
